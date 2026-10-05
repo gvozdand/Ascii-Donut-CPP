@@ -31,13 +31,14 @@ int main() {
     char grid[100][100];
     for (int x = 0; x<99; x++) {
         for (int y = 0; y<99; y++) {
-            grid[x][y] = '.';
+            grid[x][y] = ' ';
         }
     }
 
-    A += 0.5;
+    A += 0.04;
     B += 0.02;
 
+    float zbuff[100][100] {0};
 
     for (float theta = 0; theta < 2*3.14; theta+=0.035) {
         for (float phi = 0; phi < 2*3.14; phi+=0.035) {
@@ -52,8 +53,17 @@ int main() {
             int project_x = Kone*loop_x/(Ktwo+loop_z) + 50;
             int project_y = Kone*loop_y/(Ktwo+loop_z) + 50;
 
+            float L = std::cos(phi)*std::cos(theta)*std::sin(B) - std::cos(A)*std::cos(theta)*std::sin(phi) - std::sin(A)*std::sin(theta) + std::cos(B)*(std::cos(A)*std::sin(theta) - std::cos(theta)*std::sin(A)*std::sin(phi));
 
-            grid[project_x][project_y] = '#';
+
+            float near_val_check = 1/(Ktwo+loop_z);
+
+            if (L >0 && near_val_check > zbuff[project_x][project_y]) {
+            int l_idx = L*8;
+            grid[project_x][project_y] = ".,-~:;=!*#$@"[l_idx];
+            zbuff[project_x][project_y] = near_val_check;
+                }
+
 
 
 
@@ -70,7 +80,7 @@ int main() {
         frame += "\n";
     }
     std::cout << frame << std::flush;
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
 }
 
